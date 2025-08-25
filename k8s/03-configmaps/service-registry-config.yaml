@@ -8,16 +8,29 @@ metadata:
     component: service-registry
     layer: service-registry
 data:
-  # Manager URLs (Kubernetes services - migrated)
+  # Legacy Environment Variables (for backward compatibility)
+  # These may be used by some services that haven't migrated to ManagerUrls configuration
   ADDRESS_MANAGER_URL: "http://design79-address-manager:5120"
   ASSIGNMENT_MANAGER_URL: "http://design79-assignment-manager:5130"
   DELIVERY_MANAGER_URL: "http://design79-delivery-manager:5150"
+  ORCHESTRATOR_MANAGER_URL: "http://design79-orchestrator-manager:5100"
+  ORCHESTRATED_FLOW_MANAGER_URL: "http://design79-orchestratedflow-manager:5140"
   PLUGIN_MANAGER_URL: "http://design79-plugin-manager:5190"
   PROCESSOR_MANAGER_URL: "http://design79-processor-manager:5110"
   SCHEMA_MANAGER_URL: "http://design79-schema-manager:5160"
   STEP_MANAGER_URL: "http://design79-step-manager:5170"
-
-  # Manager URLs (Kubernetes services - migrated)
-  ORCHESTRATOR_MANAGER_URL: "http://design79-orchestrator-manager:5100"
-  ORCHESTRATED_FLOW_MANAGER_URL: "http://design79-orchestratedflow-manager:5140"
   WORKFLOW_MANAGER_URL: "http://design79-workflow-manager:5180"
+
+  # ManagerUrls Configuration Section (for .NET Configuration Binding)
+  # Maps the above URLs to the ManagerUrls section expected by the code
+  # Format: ManagerUrls__SectionName maps to ManagerUrls:SectionName in .NET
+  ManagerUrls__Orchestrator: "http://design79-orchestrator-manager:5100"
+  ManagerUrls__Processor: "http://design79-processor-manager:5110"
+  ManagerUrls__Address: "http://design79-address-manager:5120"
+  ManagerUrls__Assignment: "http://design79-assignment-manager:5130"
+  ManagerUrls__OrchestratedFlow: "http://design79-orchestratedflow-manager:5140"
+  ManagerUrls__Delivery: "http://design79-delivery-manager:5150"
+  ManagerUrls__Schema: "http://design79-schema-manager:5160"
+  ManagerUrls__Step: "http://design79-step-manager:5170"
+  ManagerUrls__Workflow: "http://design79-workflow-manager:5180"
+  ManagerUrls__Plugin: "http://design79-plugin-manager:5190"
