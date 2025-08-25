@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Manager.Plugin</name>
+    </assembly>
+    <members>
+        <member name="M:Manager.Plugin.Controllers.PluginController.CheckSchemaReference(System.Guid)">
+            <summary>
+            Check if a schema is referenced by any plugin entities
+            </summary>
+            <param name="schemaId">The schema ID to check</param>
+            <returns>True if schema is referenced, false otherwise</returns>
+        </member>
+        <member name="M:Manager.Plugin.Controllers.PluginController.CheckInputSchemaReference(System.Guid)">
+            <summary>
+            Check if any plugin entities reference the specified input schema ID
+            </summary>
+            <param name="inputSchemaId">The input schema ID to check</param>
+            <returns>True if input schema is referenced, false otherwise</returns>
+        </member>
+        <member name="M:Manager.Plugin.Controllers.PluginController.CheckOutputSchemaReference(System.Guid)">
+            <summary>
+            Check if any plugin entities reference the specified output schema ID
+            </summary>
+            <param name="outputSchemaId">The output schema ID to check</param>
+            <returns>True if output schema is referenced, false otherwise</returns>
+        </member>
+        <member name="M:Manager.Plugin.Repositories.IPluginEntityRepository.HasSchemaReferences(System.Guid)">
+            <summary>
+            Check if any plugin entities reference the specified schema ID
+            </summary>
+            <param name="schemaId">The schema ID to check for references</param>
+            <returns>True if any plugin entities reference the schema, false otherwise</returns>
+        </member>
+        <member name="M:Manager.Plugin.Repositories.IPluginEntityRepository.HasInputSchemaReferences(System.Guid)">
+            <summary>
+            Check if any plugin entities reference the specified input schema ID
+            </summary>
+            <param name="inputSchemaId">The input schema ID to check for references</param>
+            <returns>True if any plugin entities reference the input schema, false otherwise</returns>
+        </member>
+        <member name="M:Manager.Plugin.Repositories.IPluginEntityRepository.HasOutputSchemaReferences(System.Guid)">
+            <summary>
+            Check if any plugin entities reference the specified output schema ID
+            </summary>
+            <param name="outputSchemaId">The output schema ID to check for references</param>
+            <returns>True if any plugin entities reference the output schema, false otherwise</returns>
+        </member>
+        <member name="T:Manager.Plugin.Services.EntityReferenceValidator">
+            <summary>
+            Service for validating entity references across all entity managers
+            </summary>
+        </member>
+        <member name="T:Manager.Plugin.Services.IEntityReferenceValidator">
+            <summary>
+            Interface for validating entity references across all entity managers
+            </summary>
+        </member>
+        <member name="M:Manager.Plugin.Services.IEntityReferenceValidator.HasAssignmentReferences(System.Guid)">
+            <summary>
+            Check if an entity has any references in assignment entities
+            </summary>
+            <param name="entityId">The entity ID to check</param>
+            <returns>True if entity has references, false otherwise</returns>
+        </member>
+        <member name="M:Manager.Plugin.Services.IEntityReferenceValidator.ValidateEntityCanBeDeleted(System.Guid)">
+            <summary>
+            Validate that an entity can be deleted (no references exist)
+            </summary>
+            <param name="entityId">The entity ID to validate</param>
+            <exception cref="T:System.InvalidOperationException">Thrown if entity cannot be deleted due to references or validation service unavailable</exception>
+        </member>
+        <member name="M:Manager.Plugin.Services.IEntityReferenceValidator.ValidateEntityCanBeUpdated(System.Guid)">
+            <summary>
+            Validate that an entity can be updated (for future use if needed)
+            </summary>
+            <param name="entityId">The entity ID to validate</param>
+            <exception cref="T:System.InvalidOperationException">Thrown if entity cannot be updated due to references or validation service unavailable</exception>
+        </member>
+        <member name="T:Manager.Plugin.Services.IManagerHttpClient">
+            <summary>
+            Interface for HTTP communication with other entity managers
+            </summary>
+        </member>
+        <member name="M:Manager.Plugin.Services.IManagerHttpClient.CheckEntityReferencesInAssignments(System.Guid)">
+            <summary>
+            Check if an entity is referenced by any assignment entities
+            </summary>
+            <param name="entityId">The entity ID to check</param>
+            <returns>True if entity is referenced, false otherwise</returns>
+        </member>
+        <member name="M:Manager.Plugin.Services.IManagerHttpClient.CheckSchemaExists(System.Guid)">
+            <summary>
+            Check if a schema exists in the Schema Manager
+            </summary>
+            <param name="schemaId">The schema ID to check</param>
+            <returns>True if schema exists, false otherwise</returns>
+        </member>
+        <member name="T:Manager.Plugin.Services.ISchemaValidationService">
+            <summary>
+            Interface for validating schema references during entity operations
+            </summary>
+        </member>
+        <member name="M:Manager.Plugin.Services.ISchemaValidationService.ValidateSchemaExists(System.Guid)">
+            <summary>
+            Validates that a schema exists before creating or updating an entity
+            </summary>
+            <param name="schemaId">The schema ID to validate</param>
+            <returns>Task that completes successfully if schema exists</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown if schema doesn't exist or validation fails</exception>
+        </member>
+        <member name="M:Manager.Plugin.Services.ISchemaValidationService.ValidateRequiredSchemaExists(System.Guid)">
+            <summary>
+            Validates that a required schema exists (throws exception if empty)
+            </summary>
+            <param name="schemaId">The schema ID to validate</param>
+            <returns>Task that completes successfully if schema exists</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown if schema doesn't exist, is empty, or validation fails</exception>
+        </member>
+        <member name="T:Manager.Plugin.Services.ManagerHttpClient">
+            <summary>
+            HTTP client for communicating with other entity managers with resilience patterns
+            </summary>
+        </member>
+        <member name="T:Manager.Plugin.Services.SchemaValidationService">
+            <summary>
+            Service for validating schema references during entity operations
+            Implements strong consistency model with fail-safe approach
+            </summary>
+        </member>
+    </members>
+</doc>

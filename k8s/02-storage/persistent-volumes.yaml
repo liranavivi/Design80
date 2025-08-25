@@ -1,0 +1,169 @@
+# MongoDB Storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: design79-mongodb-data-pvc
+  namespace: design79-infrastructure
+  labels:
+    project: design79
+    component: database
+    service: mongodb
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: hostpath
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: design79-mongodb-config-pvc
+  namespace: design79-infrastructure
+  labels:
+    project: design79
+    component: database
+    service: mongodb
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: hostpath
+
+---
+# RabbitMQ Storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: design79-rabbitmq-data-pvc
+  namespace: design79-infrastructure
+  labels:
+    project: design79
+    component: message-broker
+    service: rabbitmq
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: hostpath
+
+---
+# Zookeeper Storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: design79-zookeeper-data-pvc
+  namespace: design79-infrastructure
+  labels:
+    project: design79
+    component: coordination
+    service: zookeeper
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: hostpath
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: design79-zookeeper-logs-pvc
+  namespace: design79-infrastructure
+  labels:
+    project: design79
+    component: coordination
+    service: zookeeper
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: hostpath
+
+---
+# Kafka Storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: design79-kafka-data-pvc
+  namespace: design79-infrastructure
+  labels:
+    project: design79
+    component: streaming
+    service: kafka
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: hostpath
+
+---
+# Elasticsearch Storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: design79-elasticsearch-data-pvc
+  namespace: design79-infrastructure
+  labels:
+    project: design79
+    component: search
+    service: elasticsearch
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: hostpath
+
+---
+# Prometheus Storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: design79-prometheus-data-pvc
+  namespace: design79-infrastructure
+  labels:
+    project: design79
+    component: metrics
+    service: prometheus
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: hostpath
+
+---
+# Grafana Storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: design79-grafana-data-pvc
+  namespace: design79-infrastructure
+  labels:
+    project: design79
+    component: dashboard
+    service: grafana
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: hostpath
+
+

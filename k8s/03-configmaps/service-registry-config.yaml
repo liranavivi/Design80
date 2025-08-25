@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: design79-service-registry-config
+  namespace: design79-infrastructure
+  labels:
+    project: design79
+    component: service-registry
+    layer: service-registry
+data:
+  # Manager URLs (Kubernetes services - migrated)
+  ADDRESS_MANAGER_URL: "http://design79-address-manager:5120"
+  ASSIGNMENT_MANAGER_URL: "http://design79-assignment-manager:5130"
+  DELIVERY_MANAGER_URL: "http://design79-delivery-manager:5150"
+  PLUGIN_MANAGER_URL: "http://design79-plugin-manager:5190"
+  PROCESSOR_MANAGER_URL: "http://design79-processor-manager:5110"
+  SCHEMA_MANAGER_URL: "http://design79-schema-manager:5160"
+  STEP_MANAGER_URL: "http://design79-step-manager:5170"
+
+  # Manager URLs (Kubernetes services - migrated)
+  ORCHESTRATOR_MANAGER_URL: "http://design79-orchestrator-manager:5100"
+  ORCHESTRATED_FLOW_MANAGER_URL: "http://design79-orchestratedflow-manager:5140"
+  WORKFLOW_MANAGER_URL: "http://design79-workflow-manager:5180"

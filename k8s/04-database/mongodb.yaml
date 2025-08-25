@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: design79-mongodb
+  namespace: design79-infrastructure
+  labels:
+    app: design79-mongodb
+    component: database
+    project: design79
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: design79-mongodb
+  template:
+    metadata:
+      labels:
+        app: design79-mongodb
+        component: database
+        project: design79
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:7.0
+        ports:
+        - containerPort: 27017
+          name: mongodb
+        env:
+        - name: MONGO_INITDB_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: design79-infrastructure-config
+              key: MONGODB_DATABASE_NAME
+        volumeMounts:
+        - name: mongodb-data
+          mountPath: /data/db
+        - name: mongodb-config
+          mountPath: /data/configdb
+        livenessProbe:
+          exec:
+            command:
+            - mongosh
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 15
+          failureThreshold: 5
+        readinessProbe:
+          exec:
+            command:
+            - mongosh
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+      volumes:
+      - name: mongodb-data
+        persistentVolumeClaim:
+          claimName: design79-mongodb-data-pvc
+      - name: mongodb-config
+        persistentVolumeClaim:
+          claimName: design79-mongodb-config-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: design79-mongodb
+  namespace: design79-infrastructure
+  labels:
+    app: design79-mongodb
+    component: database
+    project: design79
+    port-forward: "enabled"
+  annotations:
+    port-forward.design79.io/ports: "27017"
+    port-forward.design79.io/description: "MongoDB database access"
+spec:
+  type: ClusterIP
+  ports:
+  - port: 27017
+    targetPort: 27017
+    protocol: TCP
+    name: mongodb
+  selector:
+    app: design79-mongodb

@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: design79-delivery-manager
+  namespace: design79-infrastructure
+  labels:
+    app: design79-delivery-manager
+    component: manager
+    project: design79
+    manager-type: delivery
+    service-type: internal
+    port-forward: "enabled"
+  annotations:
+    port-forward.design79.io/ports: "5150"
+    port-forward.design79.io/description: "Delivery Manager API access"
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5150
+    targetPort: 5150
+    protocol: TCP
+    name: http
+  selector:
+    app: design79-delivery-manager
+  sessionAffinity: None
+  
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: design79-delivery-manager
+  namespace: design79-infrastructure
+  labels:
+    app: design79-delivery-manager
+    component: manager
+    project: design79
+# Endpoints will be automatically populated by Kubernetes based on pod readiness

@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: design79-prometheus
+  namespace: design79-infrastructure
+  labels:
+    app: design79-prometheus
+    component: metrics
+    project: design79
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: design79-prometheus
+  template:
+    metadata:
+      labels:
+        app: design79-prometheus
+        component: metrics
+        project: design79
+    spec:
+      containers:
+      - name: prometheus
+        image: prom/prometheus:v2.47.0
+        ports:
+        - containerPort: 9090
+          name: http
+        args:
+        - '--config.file=/etc/prometheus/prometheus.yml'
+        - '--storage.tsdb.path=/prometheus'
+        - '--web.console.libraries=/etc/prometheus/console_libraries'
+        - '--web.console.templates=/etc/prometheus/consoles'
+        - '--storage.tsdb.retention.time=200h'
+        - '--web.enable-lifecycle'
+        volumeMounts:
+        - name: prometheus-config
+          mountPath: /etc/prometheus/prometheus.yml
+          subPath: prometheus.yml
+        - name: prometheus-data
+          mountPath: /prometheus
+        livenessProbe:
+          httpGet:
+            path: /-/healthy
+            port: 9090
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /-/ready
+            port: 9090
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+      volumes:
+      - name: prometheus-config
+        configMap:
+          name: design79-prometheus-config
+      - name: prometheus-data
+        persistentVolumeClaim:
+          claimName: design79-prometheus-data-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: design79-prometheus
+  namespace: design79-infrastructure
+  labels:
+    app: design79-prometheus
+    component: metrics
+    project: design79
+    port-forward: "enabled"
+  annotations:
+    port-forward.design79.io/ports: "9090"
+    port-forward.design79.io/description: "Prometheus metrics and monitoring"
+spec:
+  type: ClusterIP
+  ports:
+  - port: 9090
+    targetPort: 9090
+    name: http
+  selector:
+    app: design79-prometheus

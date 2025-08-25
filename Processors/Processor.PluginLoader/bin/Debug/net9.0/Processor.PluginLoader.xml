@@ -1,0 +1,249 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Processor.PluginLoader</name>
+    </assembly>
+    <members>
+        <member name="T:Processor.PluginLoader.Models.PluginLoaderConfiguration">
+            <summary>
+            Configuration extracted from PluginAssignmentModel for plugin loading operations
+            Contains assembly information and plugin-specific settings
+            </summary>
+        </member>
+        <member name="P:Processor.PluginLoader.Models.PluginLoaderConfiguration.AssemblyBasePath">
+            <summary>
+            Base path where plugin assemblies are stored
+            </summary>
+        </member>
+        <member name="P:Processor.PluginLoader.Models.PluginLoaderConfiguration.AssemblyName">
+            <summary>
+            Name of the plugin assembly (without .dll extension)
+            </summary>
+        </member>
+        <member name="P:Processor.PluginLoader.Models.PluginLoaderConfiguration.Version">
+            <summary>
+            Version of the plugin assembly to load
+            </summary>
+        </member>
+        <member name="P:Processor.PluginLoader.Models.PluginLoaderConfiguration.TypeName">
+            <summary>
+            Full type name of the plugin class that implements IPlugin
+            </summary>
+        </member>
+        <member name="P:Processor.PluginLoader.Models.PluginLoaderConfiguration.ExecutionTimeoutMs">
+            <summary>
+            Optional timeout for plugin execution (in milliseconds)
+            </summary>
+        </member>
+        <member name="P:Processor.PluginLoader.Models.PluginLoaderConfiguration.IsStateless">
+            <summary>
+            Determines plugin instance caching behavior:
+            - true: Always create fresh plugin instances (stateless mode)
+            - false: Cache and reuse plugin instances (stateful mode)
+            Note: PluginManager instances are always cached regardless of this setting
+            </summary>
+        </member>
+        <member name="T:Processor.PluginLoader.PluginLoaderProcessorApplication">
+            <summary>
+            PluginLoader processor application that dynamically loads and executes plugins
+            based on configuration provided in each ProcessActivityDataAsync call.
+            Features two-level caching:
+            - Level 1: PluginManager instances are always cached by AssemblyBasePath
+            - Level 2: Plugin instances are cached based on IsStateless configuration flag
+            </summary>
+        </member>
+        <member name="M:Processor.PluginLoader.PluginLoaderProcessorApplication.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Configure processor-specific services
+            </summary>
+        </member>
+        <member name="M:Processor.PluginLoader.PluginLoaderProcessorApplication.ProcessActivityDataAsync(System.Guid,System.Guid,System.Guid,System.Guid,System.Guid,System.Collections.Generic.List{Shared.Models.AssignmentModel},System.String,System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Concrete implementation of the activity processing logic for file adapter pipe processing
+            This processor acts as a pipe - it receives cache data, processes it, and passes it through
+            while recording metrics and performing any necessary adaptations
+            </summary>
+        </member>
+        <member name="M:Processor.PluginLoader.PluginLoaderProcessorApplication.ExtractPluginConfigurationFromPluginAssignmentAsync(System.Collections.Generic.List{Shared.Models.AssignmentModel},Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Extract plugin configuration from PluginAssignmentModel within the entities collection
+            </summary>
+        </member>
+        <member name="M:Processor.PluginLoader.PluginLoaderProcessorApplication.ValidatePluginConfigurationAsync(Processor.PluginLoader.Models.PluginLoaderConfiguration,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Validate the extracted plugin configuration
+            </summary>
+        </member>
+        <member name="M:Processor.PluginLoader.PluginLoaderProcessorApplication.ClearAllCaches">
+            <summary>
+            Clears all cached PluginManager instances and disposes them.
+            This method can be called during application shutdown for cleanup.
+            </summary>
+        </member>
+        <member name="T:Processor.PluginLoader.Program">
+            <summary>
+            Entry point for the PluginLoader processor application
+            </summary>
+        </member>
+        <member name="M:Processor.PluginLoader.Program.Main(System.String[])">
+            <summary>
+            Main entry point
+            </summary>
+            <param name="args">Command line arguments</param>
+            <returns>Exit code</returns>
+        </member>
+        <member name="T:Processor.PluginLoader.Services.IPluginLoaderProcessorMetricsService">
+            <summary>
+            Metrics service interface for PluginLoader processor operations
+            </summary>
+        </member>
+        <member name="T:Processor.PluginLoader.Services.PluginLoaderProcessorMetricsService">
+            <summary>
+            Metrics service implementation for PluginLoader processor operations
+            </summary>
+        </member>
+        <member name="T:Processor.PluginLoader.Services.PluginManager">
+            <summary>
+            Plugin manager for loading and managing plugin assemblies with two-level caching:
+            Level 1: PluginManager instances are cached by AssemblyBasePath (handled by PluginManagerFactory)
+            Level 2: Plugin instances are cached within PluginManager based on IsStateless flag
+            Provides isolated assembly loading contexts with dependency injection support.
+            </summary>
+        </member>
+        <member name="F:Processor.PluginLoader.Services.PluginManager._pluginCache">
+            <summary>
+            Level 2 Cache: Plugin instances cached by AssemblyName:Version:TypeName
+            Only used when IsStateless = false
+            </summary>
+        </member>
+        <member name="M:Processor.PluginLoader.Services.PluginManager.LoadPluginAssembly(System.String,System.Version)">
+            <summary>
+            Loads a versioned plugin assembly with enhanced context and dependency resolution
+            </summary>
+            <param name="assemblyName">Name of the assembly to load</param>
+            <param name="version">Version of the assembly</param>
+            <returns>Loaded assembly</returns>
+        </member>
+        <member name="M:Processor.PluginLoader.Services.PluginManager.GetPluginInstance(System.String,System.Version,System.String,System.Boolean)">
+            <summary>
+            Gets a plugin instance with conditional caching based on IsStateless flag.
+            Level 2 caching: Plugin instances cached by AssemblyName:Version:TypeName when IsStateless = false
+            </summary>
+            <param name="assemblyName">Assembly name containing the plugin</param>
+            <param name="version">Version of the assembly</param>
+            <param name="typeName">Full type name of the plugin class</param>
+            <param name="isStateless">If true, always create fresh instance; if false, cache and reuse instances</param>
+            <returns>Plugin instance (fresh or cached based on isStateless parameter)</returns>
+        </member>
+        <member name="M:Processor.PluginLoader.Services.PluginManager.GetPluginCacheKey(System.String,System.Version,System.String)">
+            <summary>
+            Generates cache key for plugin instances
+            </summary>
+        </member>
+        <member name="P:Processor.PluginLoader.Services.PluginManager.CachedPluginCount">
+            <summary>
+            Gets the current count of cached plugin instances.
+            Useful for monitoring and diagnostics.
+            </summary>
+        </member>
+        <member name="P:Processor.PluginLoader.Services.PluginManager.CachedPluginKeys">
+            <summary>
+            Gets all cached plugin cache keys.
+            Useful for monitoring and diagnostics.
+            </summary>
+        </member>
+        <member name="M:Processor.PluginLoader.Services.PluginManager.CreateFreshPluginInstance(System.String,System.Version,System.String)">
+            <summary>
+            Creates a fresh plugin instance with dependency injection
+            </summary>
+        </member>
+        <member name="M:Processor.PluginLoader.Services.PluginManager.Dispose">
+            <summary>
+            Disposes all cached plugin instances and clears the cache
+            </summary>
+        </member>
+        <member name="T:Processor.PluginLoader.Services.SharedAssemblyLoadContext">
+            <summary>
+            Custom AssemblyLoadContext that provides plugin isolation while sharing critical infrastructure assemblies
+            </summary>
+        </member>
+        <member name="T:Processor.PluginLoader.Services.PluginManagerFactory">
+            <summary>
+            Factory for managing PluginManager instances with two-level caching:
+            Level 1: PluginManager instances are always cached by AssemblyBasePath (regardless of IsStateless)
+            Level 2: Plugin instances are cached within PluginManager based on IsStateless flag
+            </summary>
+        </member>
+        <member name="F:Processor.PluginLoader.Services.PluginManagerFactory._managerCache">
+            <summary>
+            Level 1 Cache: Always cache PluginManager instances by AssemblyBasePath
+            Key: Normalized AssemblyBasePath, Value: PluginManager instance
+            </summary>
+        </member>
+        <member name="M:Processor.PluginLoader.Services.PluginManagerFactory.GetPluginManager(System.String,System.IServiceProvider)">
+            <summary>
+            Gets or creates a PluginManager for the specified assembly base path.
+            PluginManager instances are always cached regardless of IsStateless flag for performance.
+            </summary>
+            <param name="assemblyBasePath">Base path where plugin assemblies are stored</param>
+            <param name="serviceProvider">Service provider for dependency injection</param>
+            <returns>Cached or new PluginManager instance</returns>
+        </member>
+        <member name="P:Processor.PluginLoader.Services.PluginManagerFactory.CachedManagerCount">
+            <summary>
+            Gets the current count of cached PluginManager instances.
+            Useful for monitoring and diagnostics.
+            </summary>
+        </member>
+        <member name="P:Processor.PluginLoader.Services.PluginManagerFactory.CachedAssemblyPaths">
+            <summary>
+            Gets all cached assembly base paths.
+            Useful for monitoring and diagnostics.
+            </summary>
+        </member>
+        <member name="M:Processor.PluginLoader.Services.PluginManagerFactory.ClearManagerCache">
+            <summary>
+            Clears the PluginManager cache and disposes all cached managers.
+            Use with caution - this will dispose all cached PluginManager instances.
+            </summary>
+        </member>
+        <member name="M:Processor.PluginLoader.Services.PluginManagerFactory.RemovePluginManager(System.String)">
+            <summary>
+            Removes a specific PluginManager from cache and disposes it.
+            </summary>
+            <param name="assemblyBasePath">Assembly base path of the manager to remove</param>
+            <returns>True if manager was found and removed, false otherwise</returns>
+        </member>
+        <member name="T:Processor.PluginLoader.ProcessorImplementationHash">
+            <summary>
+            Auto-generated class containing SHA-256 hash of processor implementation files.
+            Used for runtime integrity validation to ensure version consistency.
+            </summary>
+        </member>
+        <member name="P:Processor.PluginLoader.ProcessorImplementationHash.Hash">
+            <summary>
+            SHA-256 hash of the processor implementation file: PluginLoaderProcessorApplication.cs
+            </summary>
+        </member>
+        <member name="F:Processor.PluginLoader.ProcessorImplementationHash.Version">
+            <summary>
+            Processor version from assembly information.
+            </summary>
+        </member>
+        <member name="F:Processor.PluginLoader.ProcessorImplementationHash.Name">
+            <summary>
+            Processor name from assembly information.
+            </summary>
+        </member>
+        <member name="F:Processor.PluginLoader.ProcessorImplementationHash.GeneratedAt">
+            <summary>
+            Timestamp when hash was generated.
+            </summary>
+        </member>
+        <member name="F:Processor.PluginLoader.ProcessorImplementationHash.SourceFile">
+            <summary>
+            Source file that was hashed.
+            </summary>
+        </member>
+    </members>
+</doc>

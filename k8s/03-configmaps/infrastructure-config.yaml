@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: design79-infrastructure-config
+  namespace: design79-infrastructure
+  labels:
+    project: design79
+    component: infrastructure
+    layer: infrastructure
+data:
+  # Database Configuration (Internal cluster addresses)
+  ConnectionStrings__MongoDB: "mongodb://design79-mongodb:27017"
+  MONGODB_DATABASE_NAME: "design79db"
+
+  # Message Broker Configuration (Internal cluster addresses)
+  MASSTRANSIT_PROVIDER: "RabbitMQ"
+  RabbitMQ__Host: "design79-rabbitmq"
+  RabbitMQ__Port: "5672"
+  RabbitMQ__Username: "guest"
+  RabbitMQ__Password: "guest"
+  RabbitMQ__VirtualHost: "/"
+  RabbitMQ__RetryLimit: "3"
+  RabbitMQ__RetryInterval: "00:00:30"
+  RabbitMQ__PrefetchCount: "16"
+  RabbitMQ__ConcurrencyLimit: "10"
+
+  # Kafka Configuration (Internal cluster addresses)
+  Kafka__BootstrapServers: "design79-kafka:29092"
+
+  # OpenTelemetry Configuration (Internal cluster addresses)
+  OpenTelemetry__Endpoint: "http://design79-otel-collector:4317"
+  OpenTelemetry__HealthEndpoint: "http://design79-otel-collector:8081"
+
+  # Distributed Cache Configuration (Internal cluster addresses)
+  Hazelcast__ClusterName: "EntitiesManager"
+  Hazelcast__NetworkConfig__Addresses__0: "design79-hazelcast:5701"
+
+  # Cache Map Names
+  PROCESSOR_HEALTH_MAP_NAME: "processor-health"
+  PROCESSOR_ACTIVITY_MAP_NAME: "processor-activity"
+  ORCHESTRATION_CACHE_MAP_NAME: "orchestration-data"
